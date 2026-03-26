@@ -2,38 +2,69 @@ provider "azurerm" {
   features {}
 }
 
-# Reference existing Resource Group
 data "azurerm_resource_group" "existing" {
   name = var.resource_group_name
 }
 
-# Reference existing App Service Plan
-data "azurerm_app_service_plan" "existing" {
+data "azurerm_service_plan" "existing" {
   name                = var.app_service_plan_name
-  resource_group_name = data.azurerm_resource_group.existing.name
+  resource_group_name = var.resource_group_name
 }
 
-# Create App Service (Linux, .NET 7)
-resource "azurerm_linux_web_app" "webapp" {
-  name                = "${var.environment}-dotnet-webapp-${random_string.suffix.result}"
-  location            = data.azurerm_resource_group.existing.location
+resource "azurerm_linux_web_app" "dotnet_app" {
+  name                = "dotnet-app"
   resource_group_name = data.azurerm_resource_group.existing.name
-  service_plan_id     = data.azurerm_app_service_plan.existing.id
+  location            = data.azurerm_resource_group.existing.location
+  service_plan_id     = data.azurerm_service_plan.existing.id
 
   site_config {
-    application_stack {
-      dotnet_version = "7.0"
-    }
+    always_on = false  # disable for Free/F1/D1 sku
   }
 
   app_settings = {
-    "WEBSITES_ENABLE_APP_SERVICE_STORAGE" = "false"
+    "DOTNET_RUNNING_IN_CONTAINER" = "true"
+    "WEBSITES_PORT"               = "8080"
+  }
+
+  identity {
+    type = "SystemAssigned"
   }
 }
 
-# Random suffix for unique name
-resource "random_string" "suffix" {
-  length  = 5
-  special = false
-  upper   = false
+resource "azurerm_linux_web_app" "node_app" {
+  name                = "node-app"
+  resource_group_name = data.azurerm_resource_group.existing.name
+  location            = data.azurerm_resource_group.existing.location
+  service_plan_id     = data.azurerm_service_plan.existing.id
+
+  site_config {
+    always_on = false  # disable for Free/F1/D1 sku
+  }
+
+  app_settings = {
+    "WEBSITES_PORT" = "3000"
+  }
+
+  identity {
+    type = "SystemAssigned"
+  }
+}
+
+resource "azurerm_linux_web_app" "python_app" {
+  name                = "python-app"
+  resource_group_name = data.azurerm_resource_group.existing.name
+  location            = data.azurerm_resource_group.existing.location
+  service_plan_id     = data.azurerm_service_plan.existing.id
+
+  site_config {
+    always_on = false  # disable for Free/F1/D1 sku
+  }
+
+  app_settings = {
+    "WEBSITES_PORT" = "8000"
+  }
+
+  identity {
+    type = "SystemAssigned"
+  }
 }
