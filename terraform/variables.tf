@@ -1,11 +1,9 @@
 variable "resource_group_name" {
-  type = string
+  description = "The name of the existing resource group"
+  type        = string
 }
 
 variable "app_service_plan_name" {
-  type = string
-}
-
-variable "environment" {
-  type = string
+  description = "The name of the existing App Service plan"
+  type        = string
 }
