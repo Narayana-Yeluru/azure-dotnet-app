@@ -8,6 +8,8 @@ The setup supports multiple environments (`dev`, `staging`, `prod`) with **appro
 
 ## Repository Structure
 
+<img width="483" height="396" alt="image" src="https://github.com/user-attachments/assets/949f8684-f59b-4c1e-bf48-1561ea0b832e" />
+
 azure-dotnet-app/
 ├── .github/
 │ └── workflows/
